@@ -3,11 +3,11 @@ session_start();
 header('Content-Type: application/json');
 
 // Database connection
-$host = "localhost";
-$username = "root";
-$password = "";
-$database = "project";
-$port = "3307";
+$host = getenv('DB_HOST') ?: "localhost";
+$username = getenv('DB_USER') ?: "root";
+$password = getenv('DB_PASSWORD') ?: "";
+$database = getenv('DB_NAME') ?: "project";
+$port = getenv('DB_PORT') ?: "3307";
 
 $conn = new mysqli($host, $username, $password, $database, $port);
 

@@ -1,10 +1,10 @@
 <?php
 // Database connection settings
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "project";
-$port = 3307;  // Specify the custom port
+$servername = getenv('DB_HOST') ?: "localhost";
+$username = getenv('DB_USER') ?: "root";
+$password = getenv('DB_PASSWORD') ?: "";
+$dbname = getenv('DB_NAME') ?: "project";
+$port = getenv('DB_PORT') ?: 3307;
 
 // Create a connection to the database
 $conn = new mysqli($servername, $username, $password, $dbname, $port);

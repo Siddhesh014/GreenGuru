@@ -23,11 +23,11 @@ $order_id = intval($_GET['order_id']);
 $user_id = $_SESSION['user_id'];
 
 // Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "project";
-$port = "3307";
+$servername = getenv('DB_HOST') ?: "localhost";
+$username = getenv('DB_USER') ?: "root";
+$password = getenv('DB_PASSWORD') ?: "";
+$dbname = getenv('DB_NAME') ?: "project";
+$port = getenv('DB_PORT') ?: "3307";
 
 $conn = new mysqli($servername, $username, $password, $dbname, $port);
 

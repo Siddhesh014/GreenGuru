@@ -3,7 +3,13 @@ session_start();
 header('Content-Type: application/json');
 
 // Database connection
-$conn = new mysqli('localhost', 'root', '', 'project', '3307');
+$conn = new mysqli(
+    getenv('DB_HOST') ?: 'localhost',
+    getenv('DB_USER') ?: 'root',
+    getenv('DB_PASSWORD') ?: '',
+    getenv('DB_NAME') ?: 'project',
+    getenv('DB_PORT') ?: '3307'
+);
 
 // Check connection
 if ($conn->connect_error) {

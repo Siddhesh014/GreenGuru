@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: greenguru-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: project
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PHP Frontend (Apache + PHP)
+  php-frontend:
+    build:
+      context: ./greenguru
+      dockerfile: Dockerfile
+    container_name: greenguru-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: project
+      DB_PORT: 3306
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Node.js Backend API
+  backend:
+    build:
+      context: ./greenguru-backend
+      dockerfile: Dockerfile
+    container_name: greenguru-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      PORT: 3000
+
+  # Node.js Billing Service
+  billing:
+    build:
+      context: ./greenguru-billing
+      dockerfile: Dockerfile
+    container_name: greenguru-billing
+    restart: unless-stopped
+    ports:
+      - "3002:3000"
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: project
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:

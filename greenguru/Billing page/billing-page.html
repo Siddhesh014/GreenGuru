@@ -287,7 +287,6 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            alert('Order placed successfully!');
                             localStorage.removeItem('orderSummary'); // Clear stored order details
                             form.reset();
                         } else {
@@ -328,52 +327,102 @@
         },
         body: JSON.stringify(data),
     })
-    .then(response => response.json())
+    .then(async response => {
+        const text = await response.text();
+        try {
+            return JSON.parse(text);
+        } catch (err) {
+            throw new Error("Server returned invalid data: " + text.substring(0, 150));
+        }
+    })
     .then(result => {
         if (result.success) {
-            alert('Order placed successfully!');
             localStorage.removeItem('orderSummary');
             document.getElementById('billingForm').reset();
+            // Redirect to a thank you page or home page if desired
+            window.location.href = "../index.php"; 
         } else {
             alert('Error placing order: ' + result.message);
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('There was a problem with your request.');
+        console.error('Submission Error:', error);
+        alert('There was a problem with your request.\nDetails: ' + error.message);
     });
 }
 function initiateRazorpayPayment() {
     const orderSummary = JSON.parse(localStorage.getItem('orderSummary')) || { subtotal: 0, tax: 0, total: 0 };
-    const amountInPaise = orderSummary.total * 100; // Convert to paise
+    document.getElementById('rzpMockAmount').innerText = '₹' + orderSummary.total.toFixed(2);
+    
+    const email = document.getElementById('email').value;
+    document.getElementById('rzpMockEmail').innerText = email;
 
-    var options = {
-        "key": "rzp_test_zyHvdM7R2Zacnk",  // Your Razorpay Test Key
-        "amount": amountInPaise, 
-        "currency": "INR",
-        "name": "GreenGuru",
-        "description": "Order Payment",
-        "image": "https://yourwebsite.com/logo.png",
-        "handler": function (response) {
-            // Handle successful payment
-            alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
-            sendOrderToDatabase(response.razorpay_payment_id);
-        },
-        "prefill": {
-            "name": document.getElementById('fullName').value,
-            "email": document.getElementById('email').value
-        },
-        "theme": {
-            "color": "#4caf50"
-        }
+    const modal = document.getElementById('rzpMockModal');
+    const payBtn = document.getElementById('rzpMockPayBtn');
+    const proc = document.getElementById('rzpMockProcessing');
+    const succ = document.getElementById('rzpMockSuccess');
+    
+    // Reset UI
+    payBtn.style.display = 'block';
+    proc.style.display = 'none';
+    succ.style.display = 'none';
+    modal.style.display = 'flex';
+    
+    // Setup Pay action
+    payBtn.onclick = function() {
+        payBtn.style.display = 'none';
+        proc.style.display = 'block';
+        
+        // Simulate a 2-second processing delay to look real
+        setTimeout(() => {
+            proc.style.display = 'none';
+            succ.style.display = 'block';
+            
+            // After success, wait briefly, close modal, and then call database
+            setTimeout(() => {
+                modal.style.display = 'none';
+                sendOrderToDatabase("pay_simulated_" + Math.floor(Math.random() * 10000000));
+            }, 1500);
+        }, 2000);
     };
-
-    var rzp1 = new Razorpay(options);
-    rzp1.open();
 }
 
         });
     </script>
+    
+    <!-- Custom Razorpay Mock Modal for College Project -->
+    <div id="rzpMockModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center;">
+        <div style="background:#fff; width:90%; max-width:400px; border-radius:8px; overflow:hidden; font-family:sans-serif; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+            <!-- Header -->
+            <div style="background:#0b3a53; padding:20px; color:#fff; text-align:center; position:relative;">
+                <span style="position:absolute; right:15px; top:10px; cursor:pointer; font-size:24px; color:#ccc;" onclick="document.getElementById('rzpMockModal').style.display='none'">&times;</span>
+                <div style="font-size:16px; font-weight:bold; margin-bottom:5px;">GreenGuru Checkout</div>
+                <div style="font-size:28px; font-weight:bold;" id="rzpMockAmount">₹0.00</div>
+                <div style="font-size:12px; color:#ccc; margin-top:5px;" id="rzpMockEmail"></div>
+            </div>
+            <!-- Body -->
+            <div style="padding:20px;">
+                <div style="margin-bottom:15px; font-size:14px; color:#555; text-align:center;">Enter Mock Card Details</div>
+                
+                <div style="border:1px solid #ddd; border-radius:6px; padding:15px; margin-bottom:15px; background:#f9f9f9;">
+                    <input type="text" placeholder="Card Number (Any 16 digits)" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:4px; box-sizing:border-box;">
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" placeholder="MM/YY" style="width:50%; padding:10px; border:1px solid #ccc; border-radius:4px; box-sizing:border-box;">
+                        <input type="text" placeholder="CVV" style="width:50%; padding:10px; border:1px solid #ccc; border-radius:4px; box-sizing:border-box;">
+                    </div>
+                </div>
+
+                <button id="rzpMockPayBtn" style="width:100%; padding:15px; background:#4caf50; color:white; border:none; border-radius:4px; font-size:16px; font-weight:bold; cursor:pointer; text-transform:uppercase;">Pay Now</button>
+                <div id="rzpMockProcessing" style="display:none; text-align:center; padding:15px; font-weight:bold; color:#0b3a53; border: 1px solid #eee; background:#f9f9f9; border-radius:4px;">Processing Payment... ⏳</div>
+                <div id="rzpMockSuccess" style="display:none; text-align:center; padding:15px; font-weight:bold; color:#fff; background:#4caf50; border-radius:4px;">Payment Successful! ✅</div>
+                
+                <div style="text-align:center; margin-top:20px; font-size:12px; color:#aaa;">
+                    🔒 Secured by Mock Razorpay <br>(College Project Mode)
+                </div>
+            </div>
+        </div>
+    </div>
+    
      <script defer src="https://app.fastbots.ai/embed.js" data-bot-id="cm7xpcbye002foek5z3hktdz8"></script>
 </body>
 

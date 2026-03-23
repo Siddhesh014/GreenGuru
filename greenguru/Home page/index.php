@@ -40,6 +40,9 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : null;
                     <a href="index.php">Home</a>
                     <a href="../Product Page/product-interface.php" data-userinfo='<?php echo json_encode(["id" => $user_id, "username" => $username, "email" => $email]); ?>'>Products</a>
                     <a href="../About page/about.html" data-userinfo='<?php echo json_encode(["id" => $user_id, "username" => $username, "email" => $email]); ?>'>About</a>
+                    <?php if ($user_id !== null && $user_id == 0): ?>
+                        <a href="../dashboard/admin_dashboard_cleaned/index.php" class="btn btn-outline" style="margin-right: 10px; border-color: #fff; color: #fff;">Dashboard</a>
+                    <?php endif; ?>
                     <?php if ($user_id): ?>
                         <!-- <a href="../user-profile.php" class="user-circle" id="userCircle">
                             <i data-lucide="user"></i>

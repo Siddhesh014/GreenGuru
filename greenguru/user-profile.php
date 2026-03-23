@@ -14,11 +14,11 @@ $username = $_SESSION['username'];
 $email = $_SESSION['email'];
 
 // Database connection
-$servername = "localhost";
-$db_username = "root";
-$db_password = "";
-$dbname = "project";
-$port = "3307";
+$servername = getenv('DB_HOST') ?: "localhost";
+$db_username = getenv('DB_USER') ?: "root";
+$db_password = getenv('DB_PASSWORD') ?: "";
+$dbname = getenv('DB_NAME') ?: "project";
+$port = getenv('DB_PORT') ?: "3307";
 
 $conn = new mysqli($servername, $db_username, $db_password, $dbname, $port);
 

@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const path = require('path');
 
@@ -13,21 +13,35 @@ app.use(bodyParser.json());
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// MySQL Connection
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'vedant', // replace with your MySQL username
-    password: 'Vedant@47', // replace with your MySQL password
-    database: 'greenguru' // replace with your database name
-});
+// MySQL Connection with retry logic
+const dbConfig = {
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'project'
+};
 
-connection.connect((err) => {
-    if (err) {
-        console.error('Error connecting to the database:', err);
-    } else {
-        console.log('Connected to the database');
-    }
-});
+let connection;
+
+function connectWithRetry() {
+    connection = mysql.createConnection(dbConfig);
+    connection.connect((err) => {
+        if (err) {
+            console.error('Database connection failed, retrying in 3s...', err.message);
+            setTimeout(connectWithRetry, 3000);
+        } else {
+            console.log('Connected to the database');
+        }
+    });
+    connection.on('error', (err) => {
+        if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.fatal) {
+            console.error('Database connection lost, reconnecting...');
+            connectWithRetry();
+        }
+    });
+}
+
+connectWithRetry();
 
 // Route to handle form submission
 app.post('/submit', (req, res) => {

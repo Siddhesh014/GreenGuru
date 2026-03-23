@@ -1,10 +1,18 @@
 <?php
+session_start();
+
+// Admin Security Check
+if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] != 0) {
+    header("Location: ../../Login page/login.html");
+    exit();
+}
+
 // Database connection
-$host = 'localhost';
-$user = 'root';
-$password = '';
-$database = 'project';
-$port="3307";
+$host = getenv('DB_HOST') ?: 'localhost';
+$user = getenv('DB_USER') ?: 'root';
+$password = getenv('DB_PASSWORD') ?: '';
+$database = getenv('DB_NAME') ?: 'project';
+$port = getenv('DB_PORT') ?: "3307";
 
 // Create connection
 $conn = new mysqli($host, $user, $password, $database,$port);

@@ -1,0 +1,11 @@
+.git
+.gitignore
+README.md
+documentation.md
+LICENSE
+product img
+product pics
+tp
+docker
+*.md
+node_modules

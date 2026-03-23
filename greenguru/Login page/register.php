@@ -1,10 +1,10 @@
 <?php
 // Database connection details
-$servername = "localhost";
-$username = "root"; // Default phpMyAdmin username
-$password = ""; // Default is empty
-$dbname = "project"; // The name of your database
-$port='3307';
+$servername = getenv('DB_HOST') ?: "localhost";
+$username = getenv('DB_USER') ?: "root";
+$password = getenv('DB_PASSWORD') ?: "";
+$dbname = getenv('DB_NAME') ?: "project";
+$port = getenv('DB_PORT') ?: '3307';
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname,$port);

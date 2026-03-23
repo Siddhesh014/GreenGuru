@@ -4,13 +4,15 @@ ini_set('display_errors', 1);
 session_start();
 
 header('Content-Type: application/json');
-ob_clean();
+if (ob_get_length()) {
+    ob_clean();
+}
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "project";
-$port = "3307";
+$servername = getenv('DB_HOST') ?: "localhost";
+$username = getenv('DB_USER') ?: "root";
+$password = getenv('DB_PASSWORD') ?: "";
+$dbname = getenv('DB_NAME') ?: "project";
+$port = getenv('DB_PORT') ?: "3307";
 
 $conn = new mysqli($servername, $username, $password, $dbname, $port);
 
