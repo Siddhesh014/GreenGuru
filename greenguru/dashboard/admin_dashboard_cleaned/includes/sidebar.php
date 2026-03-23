@@ -71,7 +71,7 @@
                 <a href="<?php echo $prefix; ?>../../Home page/index.php" class="btn btn-sm btn-outline-light border-secondary border-opacity-50 rounded-pill">
                     <i class="bi bi-house-door me-2"></i>Storefront
                 </a>
-                <a href="<?php echo $prefix; ?>../../Login page/login.html" class="btn btn-sm btn-danger rounded-pill">
+                <a href="<?php echo $prefix; ?>../../Login page/logout.php" class="btn btn-sm btn-danger rounded-pill">
                     <i class="bi bi-box-arrow-right me-2"></i>Logout
                 </a>
             </div>
@@ -98,4 +98,4 @@
     @media (max-width: 767.98px) {
         .sidebar { position: fixed; top: 0; left: 0; z-index: 1000; height: 100%; width: 260px; }
     }
-</style>
+</style>

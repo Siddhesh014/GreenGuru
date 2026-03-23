@@ -21,10 +21,13 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 // Get the incoming data
 $user_id = $_SESSION['user_id'] ?? null;
+$sessionRole = isset($_SESSION['role']) ? strtolower(trim((string)$_SESSION['role'])) : '';
+$sessionUserId = $user_id !== null ? (int)$user_id : -1;
+$isAdminSession = ($sessionRole === 'admin' || $sessionUserId === 0);
 $product_index_no = $data['product_index_no'];
 $quantity = $data['quantity'] ?? 1;
 
-if (!$user_id) {
+if (!$user_id || $isAdminSession) {
     die(json_encode(['error' => 'User not logged in']));
 }
 

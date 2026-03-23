@@ -4,6 +4,14 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: ../Login page/login.html");
     exit();
 }
+$sessionRole = isset($_SESSION['role']) ? strtolower(trim((string)$_SESSION['role'])) : '';
+$sessionUserId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : -1;
+$isAdminSession = ($sessionRole === 'admin' || $sessionUserId === 0);
+if ($isAdminSession) {
+    // Admin should not see product page
+    header("Location: ../dashboard/admin_dashboard_cleaned/index.php");
+    exit();
+}
 $user_id = $_SESSION['user_id'];
 ?>
 <!DOCTYPE html>

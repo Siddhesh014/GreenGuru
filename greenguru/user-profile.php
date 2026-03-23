@@ -7,6 +7,13 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: Login page/login.html");
     exit();
 }
+$sessionRole = isset($_SESSION['role']) ? strtolower(trim((string)$_SESSION['role'])) : '';
+$sessionUserId = (int)$_SESSION['user_id'];
+$isAdminSession = ($sessionRole === 'admin' || $sessionUserId === 0);
+if ($isAdminSession) {
+    header("Location: dashboard/admin_dashboard_cleaned/index.php");
+    exit();
+}
 
 // Get user information
 $user_id = $_SESSION['user_id'];

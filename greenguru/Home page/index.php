@@ -1,5 +1,12 @@
 <?php
 session_start();
+$sessionRole = isset($_SESSION['role']) ? strtolower(trim((string)$_SESSION['role'])) : '';
+$sessionUserId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : -1;
+$isAdminSession = ($sessionRole === 'admin' || $sessionUserId === 0);
+if ($isAdminSession) {
+    header("Location: ../dashboard/admin_dashboard_cleaned/index.php");
+    exit();
+}
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 $username = isset($_SESSION['username']) ? $_SESSION['username'] : null;
 $email = isset($_SESSION['email']) ? $_SESSION['email'] : null;
@@ -40,7 +47,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : null;
                     <a href="index.php">Home</a>
                     <a href="../Product Page/product-interface.php" data-userinfo='<?php echo json_encode(["id" => $user_id, "username" => $username, "email" => $email]); ?>'>Products</a>
                     <a href="../About page/about.html" data-userinfo='<?php echo json_encode(["id" => $user_id, "username" => $username, "email" => $email]); ?>'>About</a>
-                    <?php if ($user_id !== null && $user_id == 0): ?>
+                    <?php if ($isAdminSession): ?>
                         <a href="../dashboard/admin_dashboard_cleaned/index.php" class="btn btn-outline" style="margin-right: 10px; border-color: #fff; color: #fff;">Dashboard</a>
                     <?php endif; ?>
                     <?php if ($user_id): ?>

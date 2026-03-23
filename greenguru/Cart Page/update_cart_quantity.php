@@ -25,6 +25,14 @@ if (!isset($_SESSION['user_id']) || !isset($data['product_index_no']) || !isset(
 }
 
 $user_id = $_SESSION['user_id'];
+$sessionRole = isset($_SESSION['role']) ? strtolower(trim((string)$_SESSION['role'])) : '';
+$sessionUserId = (int)$user_id;
+$isAdminSession = ($sessionRole === 'admin' || $sessionUserId === 0);
+
+if ($isAdminSession) {
+    die(json_encode(['error' => 'Only customer accounts can update cart']));
+}
+
 $product_index_no = intval($data['product_index_no']);
 $quantity = intval($data['quantity']);
 

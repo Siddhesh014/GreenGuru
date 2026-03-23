@@ -19,8 +19,11 @@ if ($conn->connect_error) {
 
 // Get user ID from session
 $user_id = $_SESSION['user_id'] ?? null;
+$sessionRole = isset($_SESSION['role']) ? strtolower(trim((string)$_SESSION['role'])) : '';
+$sessionUserId = $user_id !== null ? (int)$user_id : -1;
+$isAdminSession = ($sessionRole === 'admin' || $sessionUserId === 0);
 
-if ($user_id) {
+if ($user_id && !$isAdminSession) {
     // Query to join cart and products tables
     $sql = "
         SELECT 
@@ -54,7 +57,7 @@ if ($user_id) {
     echo json_encode($cartItems);
 } else {
     header('Content-Type: application/json');
-    echo json_encode(["error" => "User not logged in"]);
+    echo json_encode(["error" => "Cart access is available for customer accounts only"]);
 }
 
 $conn->close();

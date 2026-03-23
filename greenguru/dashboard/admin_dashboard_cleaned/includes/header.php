@@ -1,3 +1,17 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$sessionRole = isset($_SESSION['role']) ? strtolower(trim((string)$_SESSION['role'])) : '';
+$sessionUserId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : -1;
+$isAdminSession = ($sessionRole === 'admin' || $sessionUserId === 0);
+
+if (!$isAdminSession) {
+    header("Location: ../../Login page/admin-login.html");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
